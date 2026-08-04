@@ -1,0 +1,72 @@
+name: API Tests
+
+on:
+  push:
+    branches: [main, develop, "feature/**", "fix/**"]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  api-tests:
+    name: Run API tests
+    runs-on: ubuntu-latest
+
+    env:
+      API_PORT: 3000
+      API_TOKEN: qa-lab-token
+      API_BASE_URL: http://127.0.0.1:3000
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install root dependencies
+        run: npm ci
+
+      - name: Install API dependencies
+        run: npm --prefix api ci
+
+      - name: Build API
+        run: npm run api:build
+
+      - name: Start API
+        run: npm run api:start > api.log 2>&1 &
+
+      - name: Wait for API health check
+        run: |
+          for i in {1..30}; do
+            if curl -s http://127.0.0.1:3000/health | grep "UP"; then
+              echo "API is ready"
+              exit 0
+            fi
+            echo "Waiting for API..."
+            sleep 2
+          done
+          echo "API did not start in time"
+          cat api.log
+          exit 1
+
+      - name: Run API tests
+        run: npm run test:api
+
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report-api
+          path: reports/playwright-report
+          if-no-files-found: ignore
+
+      - name: Upload API logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-log
+          path: api.log
+          if-no-files-found: ignore

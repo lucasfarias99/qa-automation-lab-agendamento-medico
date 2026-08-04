@@ -1,0 +1,49 @@
+{
+  "name": "qa-automation-lab-agendamento-medico",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Projeto de portfólio demonstrando automação E2E e de API com Playwright + TypeScript, validação de banco de dados, isolamento de massa de teste e pipeline CI/CD com relatório publicado.",
+  "author": "Lucas Farias",
+  "license": "MIT",
+  "keywords": [
+    "qa",
+    "qa-automation",
+    "e2e-testing",
+    "api-testing",
+    "playwright",
+    "typescript",
+    "sqlite",
+    "github-actions",
+    "healthtech"
+  ],
+  "scripts": {
+    "db:reset": "rm -f data/agendamento.db && npm run api:seed",
+    "api:seed": "npm --prefix api run seed",
+    "api:dev": "npm --prefix api run dev",
+    "api:build": "npm --prefix api run build",
+    "api:start": "npm --prefix api run start",
+    "web:dev": "npm --prefix web-app run dev",
+    "web:build": "npm --prefix web-app run build",
+    "web:preview": "npm --prefix web-app run preview",
+    "test:api": "playwright test --project=api",
+    "test:db": "playwright test --project=database",
+    "test:backend": "playwright test --project=api --project=database",
+    "test:e2e": "playwright test --project=e2e",
+    "test:e2e:smoke": "playwright test --project=e2e --grep @smoke",
+    "test:e2e:dev": "playwright test --project=e2e --headed --retries=0 --reporter=line",
+    "test:e2e:ui": "playwright test --project=e2e --ui",
+    "test:e2e:debug": "playwright test --project=e2e --debug",
+    "test:all": "playwright test",
+    "test:report": "playwright show-report reports/playwright-report",
+    "test:report:port": "playwright show-report reports/playwright-report --port 9324",
+    "allure:generate": "allure generate reports/allure-results --clean -o reports/allure-report",
+    "allure:open": "allure open reports/allure-report",
+    "install:all": "npm install && npm --prefix api install && npm --prefix web-app install"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.62.1",
+    "@types/node": "^26.1.2",
+    "dotenv": "^17.4.2",
+    "typescript": "^7.0.2"
+  }
+}

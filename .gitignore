@@ -1,0 +1,18 @@
+node_modules/
+data/
+reports/
+.env
+*.log
+dist/
+build/
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
+# Documentos internos de planejamento (não versionados no repositório remoto)
+/docs/viabilidade_projeto1_agendamento.md
+/docs/analise_referencia_lucasmt01.md
+/docs/questions.MD
