@@ -4,10 +4,16 @@ import path from 'node:path';
 
 let db: Database.Database | null = null;
 
+// api/src/config -> api/src -> api -> raiz do repositório.
+// Resolvido a partir de __dirname (estável) em vez de process.cwd(), que muda
+// conforme o comando é chamado com `npm --prefix api` (cwd vira api/).
+const REPO_ROOT = path.resolve(__dirname, '..', '..', '..');
+
 export function getDb(): Database.Database {
   if (db) return db;
 
-  const dbPath = process.env.DB_PATH ?? './data/agendamento.db';
+  const configuredPath = process.env.DB_PATH ?? './data/agendamento.db';
+  const dbPath = path.isAbsolute(configuredPath) ? configuredPath : path.resolve(REPO_ROOT, configuredPath);
   const dir = path.dirname(dbPath);
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir, { recursive: true });
