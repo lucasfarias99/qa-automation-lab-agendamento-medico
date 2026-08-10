@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Patient Response Schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "name", "email", "document", "testRunId", "createdAt"],
+  "properties": {
+    "id": { "type": "string", "pattern": "^pat_" },
+    "name": { "type": "string" },
+    "email": { "type": "string", "format": "email" },
+    "document": { "type": "string", "pattern": "^\\d{11}$" },
+    "testRunId": { "type": ["string", "null"] },
+    "createdAt": { "type": "string", "format": "date-time" }
+  }
+}
