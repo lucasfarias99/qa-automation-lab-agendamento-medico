@@ -35,6 +35,9 @@ jobs:
       - name: Build API
         run: npm run api:build
 
+      - name: Seed database
+        run: npm run api:seed
+
       - name: Start API
         run: npm run api:start > api.log 2>&1 &
 
