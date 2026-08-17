@@ -2,14 +2,25 @@ import { test, expect } from '@playwright/test';
 import { authHeaders } from '../helpers/auth';
 import { generateTestRunId } from '../helpers/test-run';
 import { countAppointmentsByTestRunId, countPatientsByTestRunId } from '../helpers/db-client';
+import { cleanupAllByTestRunId } from '../helpers/cleanup';
 import { expectCleanupResponse, expectErrorResponse } from '../helpers/appointment-assertions';
 import { validateSchema } from '../helpers/schema-validator';
 import { validPatientPayload } from '../fixtures/patient.fixture';
 import { validAppointmentPayload } from '../fixtures/appointment.fixture';
 
+let testRunIdsToCleanup: string[] = [];
+
+test.afterEach(async ({ request }) => {
+  for (const testRunId of testRunIdsToCleanup) {
+    await cleanupAllByTestRunId(request, testRunId);
+  }
+  testRunIdsToCleanup = [];
+});
+
 test('CT-051 - deve expurgar agendamentos por testRunId', async ({ request }) => {
   // Arrange
   const testRunId = generateTestRunId();
+  testRunIdsToCleanup.push(testRunId);
   const patientPayload = validPatientPayload(testRunId);
   const registerResponse = await request.post('/auth/register', { data: patientPayload });
   const patient = await registerResponse.json();
@@ -29,14 +40,12 @@ test('CT-051 - deve expurgar agendamentos por testRunId', async ({ request }) =>
   expect(response.status()).toBe(200);
   expectCleanupResponse(body, testRunId, 1);
   expect(countAppointmentsByTestRunId(testRunId)).toBe(0);
-
-  // Limpa o paciente residual criado neste teste.
-  await request.delete('/test-data/patients', { headers: authHeaders, params: { testRunId } });
 });
 
 test('CT-052 - deve expurgar pacientes por testRunId', async ({ request }) => {
   // Arrange
   const testRunId = generateTestRunId();
+  testRunIdsToCleanup.push(testRunId);
   const patientPayload = validPatientPayload(testRunId);
   await request.post('/auth/register', { data: patientPayload });
   expect(countPatientsByTestRunId(testRunId)).toBe(1);

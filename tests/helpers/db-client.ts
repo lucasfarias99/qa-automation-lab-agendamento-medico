@@ -93,6 +93,22 @@ export function findAppointmentsByDoctorAndSlot(doctorId: string, scheduledAt: s
   return rows.map(toAppointment);
 }
 
+export interface PatientRecord {
+  id: string;
+  name: string;
+  email: string;
+  document: string;
+  passwordHash: string;
+  testRunId: string | null;
+  createdAt: string;
+}
+
+export function findPatientsByTestRunId(testRunId: string): PatientRecord[] {
+  return getDb()
+    .prepare('SELECT * FROM patients WHERE testRunId = ? ORDER BY createdAt')
+    .all(testRunId) as PatientRecord[];
+}
+
 export function closeDbConnection(): void {
   if (db) {
     db.close();

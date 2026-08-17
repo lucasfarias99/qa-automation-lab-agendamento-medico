@@ -55,8 +55,11 @@ jobs:
           cat api.log
           exit 1
 
-      - name: Run API tests
-        run: npm run test:api
+      - name: Run API and database tests
+        run: npm run test:backend
+
+      - name: Verify database is clean
+        run: npm run db:verify-clean
 
       - name: Upload Playwright report
         if: always()

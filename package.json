@@ -18,6 +18,7 @@
   ],
   "scripts": {
     "db:reset": "rm -f data/agendamento.db && npm run api:seed",
+    "db:verify-clean": "node scripts/verify-db-clean.js",
     "api:seed": "npm --prefix api run seed",
     "api:dev": "npm --prefix api run dev",
     "api:build": "npm --prefix api run build",
